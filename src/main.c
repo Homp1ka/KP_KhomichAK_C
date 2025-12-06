@@ -3,7 +3,7 @@
 
 #define _XTAL_FREQ 4000000UL  // MCU frequency 4 MHz (for compiler delays)
 
-//================ CONFIGURATION BITS FOR PIC18F2520 =========================
+
 #pragma config OSC = INTIO67     // Internal oscillator, RA6/RA7 as I/O
 #pragma config FCMEN = OFF       // Fail-Safe Clock Monitor disabled
 #pragma config IESO = OFF        // Internal/External Oscillator Switchover disabled
@@ -21,28 +21,21 @@
 #pragma config XINST = OFF       // Extended Instruction Set disabled
 #pragma config DEBUG = OFF       // Background Debugger disabled
 
-//================ GLOBAL VARIABLES ==========================================
+
 volatile unsigned char adc_update_flag = 0; // Flag: "time to read ADC" (set by Timer0 ISR)
 volatile uint32_t system_tick = 0;          // System milliseconds counter (incremented in ISR)
 
 uint16_t adc_raw = 0;      // Raw ADC value (0..1023 corresponds to 0..5V)
 uint16_t filtered = 0;     // Filtered (smoothed) ADC value
 
-//================ SIMPLE SYSTEM TIMER (based on Timer0) =====================
 
-/**
- * @brief Initializes Timer0 as system timer (1 ms interrupts)
- * 
- * Timer0 is configured to generate interrupts every 1 ms.
- * In the interrupt handler, we increment system_tick counter
- * and set adc_update_flag every 500 ms.
- * 
- * Calculation for 1 ms at 4 MHz:
- * Fosc/4 = 1 MHz = 1 µs period
- * With prescaler 1:8: 8 µs per count
- * Required: 1000 µs / 8 µs = 125 counts
- * Initial value: 65536 - 125 = 65411 = 0xFF83
- */
+
+//Calculation for 1 ms at 4 MHz:
+  //Fosc/4 = 1 MHz = 1 µs period
+  //With prescaler 1:8: 8 µs per count
+  //Required: 1000 µs / 8 µs = 125 counts
+ //nitial value: 65536 - 125 = 65411 = 0xFF83
+ //
 void setupSimpleTimer(void) {
     // Turn off Timer0 for configuration
     T0CONbits.TMR0ON = 0;
